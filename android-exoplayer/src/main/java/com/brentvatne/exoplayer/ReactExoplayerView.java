@@ -52,6 +52,8 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.source.hls.SigmaAdapter;
+import com.google.android.exoplayer2.source.hls.SigmaHelper;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
@@ -81,7 +83,7 @@ class ReactExoplayerView extends FrameLayout implements
         BandwidthMeter.EventListener,
         BecomingNoisyListener,
         AudioManager.OnAudioFocusChangeListener,
-        MetadataOutput {
+        MetadataOutput, SigmaAdapter {
 
     private static final String TAG = "ReactExoplayerView";
 
@@ -144,6 +146,7 @@ class ReactExoplayerView extends FrameLayout implements
     private Map<String, String> requestHeaders;
     private boolean mReportBandwidth = false;
     private boolean controls;
+    private String drmToken;
     // \ End props
 
     // React
@@ -181,6 +184,7 @@ class ReactExoplayerView extends FrameLayout implements
 
     public ReactExoplayerView(ThemedReactContext context, ReactExoplayerConfig config) {
         super(context);
+        SigmaHelper.instance().setAdapter(this);
         this.themedReactContext = context;
         this.initialOrientation = getResources().getConfiguration().orientation;
         this.eventEmitter = new VideoEventEmitter(context);
@@ -1321,5 +1325,18 @@ class ReactExoplayerView extends FrameLayout implements
                 removeViewAt(indexOfPC);
             }
         }
+    }
+
+    public void setClientId(String clientId){
+        SigmaHelper.instance().setClientId(clientId);
+    }
+
+    public void setAuthenToken(String authenToken){
+        this.drmToken = authenToken;
+    }
+
+    @Override
+    public String authenToken() {
+        return this.drmToken;
     }
 }

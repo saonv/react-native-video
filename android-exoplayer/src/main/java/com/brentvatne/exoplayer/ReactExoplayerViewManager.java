@@ -12,6 +12,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.source.hls.SigmaHelper;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 
 import java.util.HashMap;
@@ -59,6 +60,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_SELECTED_VIDEO_TRACK_VALUE = "value";
     private static final String PROP_HIDE_SHUTTER_VIEW = "hideShutterView";
     private static final String PROP_CONTROLS = "controls";
+    private static final String PROP_CLIENTID = "clientId";
+    private static final String PROP_AUTHEN_TOKEN = "authenToken";
 
     private ReactExoplayerConfig config;
 
@@ -290,6 +293,14 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
                     ? bufferConfig.getInt(PROP_BUFFER_CONFIG_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS) : bufferForPlaybackAfterRebufferMs;
             videoView.setBufferConfig(minBufferMs, maxBufferMs, bufferForPlaybackMs, bufferForPlaybackAfterRebufferMs);
         }
+    }
+    @ReactProp(name = PROP_CLIENTID)
+    public void setClientId(final ReactExoplayerView videoView, final String clientId){
+        SigmaHelper.instance().setClientId(clientId);
+    }
+    @ReactProp(name = PROP_AUTHEN_TOKEN)
+    public void setAuthenToken(final ReactExoplayerView videoView, final String authenToken){
+        SigmaHelper.instance().setClientId(authenToken);
     }
 
     private boolean startsWithValidScheme(String uriString) {
