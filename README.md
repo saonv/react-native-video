@@ -61,7 +61,7 @@ Then follow the instructions for your platform to link react-native-video into y
 
 **React Native 0.60 and above**
 
-Run `pod install` in the `ios` directory. Linking is not required in React Native 0.60 and above.
+Run `npx pod-install`. Linking is not required in React Native 0.60 and above.
 
 **React Native 0.59 and below**
 
@@ -184,52 +184,34 @@ protected List<ReactPackage> getPackages() {
 
 ### Windows installation
 <details>
-  <summary>Windows details</summary>
+  <summary>Windows RNW C++/WinRT details</summary>
 
 Make the following additions to the given files manually:
 
 #### **windows/myapp.sln**
 
-Add the `ReactNativeVideo` project to your solution.
+Add the `ReactNativeVideoCPP` project to your solution.
 
-1. Open the solution in Visual Studio 2015
+1. Open the solution in Visual Studio 2019
 2. Right-click Solution icon in Solution Explorer > Add > Existing Project
-  * UWP: Select `node_modules\react-native-video\windows\ReactNativeVideo\ReactNativeVideo.csproj`
-  * WPF: Select `node_modules\react-native-video\windows\ReactNativeVideo.Net46\ReactNativeVideo.Net46.csproj`
+   Select `node_modules\react-native-video\windows\ReactNativeVideoCPP\ReactNativeVideoCPP.vcxproj`
 
-#### **windows/myapp/myapp.csproj**
+#### **windows/myapp/myapp.vcxproj**
 
-Add a reference to `ReactNativeVideo` to your main application project. From Visual Studio 2015:
+Add a reference to `ReactNativeVideoCPP` to your main application project. From Visual Studio 2019:
 
 1. Right-click main application project > Add > Reference...
-  * UWP: Check `ReactNativeVideo` from Solution Projects.
-  * WPF: Check `ReactNativeVideo.Net46` from Solution Projects.
+  Check `ReactNativeVideoCPP` from Solution Projects.
 
-#### **MainPage.cs**
+2. Modify files below to add the video package providers to your main application project
+#### **pch.h**
 
-Add the `ReactVideoPackage` class to your list of exported packages.
-```cs
-using ReactNative;
-using ReactNative.Modules.Core;
-using ReactNative.Shell;
-using ReactNativeVideo; // <-- Add this
-using System.Collections.Generic;
-...
+Add `#include "winrt/ReactNativeVideoCPP.h"`.
 
-        public override List<IReactPackage> Packages
-        {
-            get
-            {
-                return new List<IReactPackage>
-                {
-                    new MainReactPackage(),
-                    new ReactVideoPackage(), // <-- Add this
-                };
-            }
-        }
+#### **app.cpp**
 
-...
-```
+Add `PackageProviders().Append(winrt::ReactNativeVideoCPP::ReactPackageProvider());` before `InitializeComponent();`.
+
 </details>
 
 ### react-native-dom installation
@@ -295,6 +277,7 @@ var styles = StyleSheet.create({
 * [automaticallyWaitsToMinimizeStalling](#automaticallyWaitsToMinimizeStalling)
 * [bufferConfig](#bufferconfig)
 * [controls](#controls)
+* [currentPlaybackTime](#currentPlaybackTime)
 * [disableFocus](#disableFocus)
 * [filter](#filter)
 * [filterEnabled](#filterEnabled)
@@ -307,6 +290,7 @@ var styles = StyleSheet.create({
 * [ignoreSilentSwitch](#ignoresilentswitch)
 * [maxBitRate](#maxbitrate)
 * [minLoadRetryCount](#minLoadRetryCount)
+* [mixWithOthers](#mixWithOthers)
 * [muted](#muted)
 * [paused](#paused)
 * [pictureInPicture](#pictureinpicture)
@@ -314,6 +298,7 @@ var styles = StyleSheet.create({
 * [playWhenInactive](#playwheninactive)
 * [poster](#poster)
 * [posterResizeMode](#posterresizemode)
+* [preferredForwardBufferDuration](#preferredForwardBufferDuration)
 * [progressUpdateInterval](#progressupdateinterval)
 * [rate](#rate)
 * [repeat](#repeat)
@@ -325,6 +310,7 @@ var styles = StyleSheet.create({
 * [source](#source)
 * [stereoPan](#stereopan)
 * [textTracks](#texttracks)
+* [trackId](#trackId)
 * [useTextureView](#usetextureview)
 * [volume](#volume)
 
@@ -387,7 +373,7 @@ Property | Type | Description
 minBufferMs | number | The default minimum duration of media that the player will attempt to ensure is buffered at all times, in milliseconds.
 maxBufferMs | number | The default maximum duration of media that the player will attempt to buffer, in milliseconds.
 bufferForPlaybackMs | number | The default duration of media that must be buffered for playback to start or resume following a user action such as a seek, in milliseconds.
-playbackAfterRebufferMs | number | The default duration of media that must be buffered for playback to resume after a rebuffer, in milliseconds. A rebuffer is defined to be caused by buffer depletion rather than a user action.
+bufferForPlaybackAfterRebufferMs | number | The default duration of media that must be buffered for playback to resume after a rebuffer, in milliseconds. A rebuffer is defined to be caused by buffer depletion rather than a user action.
 
 This prop should only be set when you are setting the source, changing it after the media is loaded will cause it to be reloaded.
 
@@ -402,6 +388,11 @@ bufferConfig={{
 ```
 
 Platforms: Android ExoPlayer
+
+#### currentPlaybackTime
+When playing an HLS live stream with a `EXT-X-PROGRAM-DATE-TIME` tag configured, then this property will contain the epoch value in msec.
+
+Platforms: Android ExoPlayer, iOS
 
 #### controls
 Determines whether to show player controls.
@@ -549,6 +540,14 @@ minLoadRetryCount={5} // retry 5 times
 
 Platforms: Android ExoPlayer
 
+#### mixWithOthers
+Controls how Audio mix with other apps.
+* **"inherit" (default)** - Use the default AVPlayer behavior
+* **"mix"** - Audio from this video mixes with audio from other apps.
+* **"duck"** - Reduces the volume of other apps while audio from this video plays.
+
+Platforms: iOS
+
 #### muted
 Controls whether the audio is muted
 * **false (default)** - Don't mute audio
@@ -604,6 +603,13 @@ Determines how to resize the poster image when the frame doesn't match the raw v
 * **"stretch"** - Scale width and height independently, This may change the aspect ratio of the src.
 
 Platforms: all
+
+#### preferredForwardBufferDuration
+The duration the player should buffer media from the network ahead of the playhead to guard against playback disruption. Sets the [preferredForwardBufferDuration](https://developer.apple.com/documentation/avfoundation/avplayeritem/1643630-preferredforwardbufferduration) instance property on AVPlayerItem.
+
+Default: 0
+
+Platforms: iOS
 
 #### progressUpdateInterval
 Delay in milliseconds between onProgress events in milliseconds.
@@ -840,6 +846,11 @@ textTracks={[
 
 Platforms: Android ExoPlayer, iOS
 
+#### trackId
+Configure an identifier for the video stream to link the playback context to the events emitted.
+
+Platforms: Android ExoPlayer
+
 #### useTextureView
 Controls whether to output to a TextureView or SurfaceView.
 
@@ -957,6 +968,7 @@ duration | number | Length of the media in seconds
 naturalSize | object | Properties:<br> * width - Width in pixels that the video was encoded at<br> * height - Height in pixels that the video was encoded at<br> * orientation - "portrait" or "landscape"
 audioTracks | array | An array of audio track info objects with the following properties:<br> * index - Index number<br> * title - Description of the track<br> * language - 2 letter [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) or 3 letter [ISO639-2](https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes) language code<br> * type - Mime type of track
 textTracks | array | An array of text track info objects with the following properties:<br> * index - Index number<br> * title - Description of the track<br> * language - 2 letter [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) or 3 letter [ISO 639-2](https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes) language code<br> * type - Mime type of track
+videoTracks | array | An array of video track info objects with the following properties:<br> * trackId - ID for the track<br> * bitrate - Bit rate in bits per second<br> * codecs - Comma separated list of codecs<br> * height - Height of the video<br> * width - Width of the video
 
 Example:
 ```
@@ -982,6 +994,11 @@ Example:
     { title: '#1 French', language: 'fr', index: 0, type: 'text/vtt' },
     { title: '#2 English CC', language: 'en', index: 1, type: 'text/vtt' },
     { title: '#3 English Director Commentary', language: 'en', index: 2, type: 'text/vtt' }
+  ],
+  videoTracks: [
+    { bitrate: 3987904, codecs: "avc1.640028", height: 720, trackId: "f1-v1-x3", width: 1280 },
+    { bitrate: 7981888, codecs: "avc1.640028", height: 1080, trackId: "f2-v1-x3", width: 1920 },
+    { bitrate: 1994979, codecs: "avc1.4d401f", height: 480, trackId: "f3-v1-x3", width: 848 }
   ]
 }
 ```
@@ -1133,7 +1150,7 @@ Methods operate on a ref to the Video element. You can create a ref using code l
 ```
 return (
   <Video source={...}
-    ref => (this.player = ref) />
+    ref={ref => (this.player = ref)} />
 );
 ```
 
