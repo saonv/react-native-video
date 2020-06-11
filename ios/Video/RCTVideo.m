@@ -137,6 +137,8 @@ static int const RCTVideoUnset = -1;
                                              selector:@selector(audioRouteChanged:)
                                                  name:AVAudioSessionRouteChangeNotification
                                                object:nil];
+      
+      [[SigmaDRM getInstance] setDelegate:self];
   }
   
   return self;
@@ -403,6 +405,14 @@ static int const RCTVideoUnset = -1;
   });
   _videoLoadStarted = YES;
 }
+-(void)setClientId:(NSString *)clientId
+{
+    [[SigmaDRM getInstance] setClientId:clientId];
+}
+-(void)setAuthenToken:(NSString *)authenToken
+{
+    [[SigmaDRM getInstance] setAuthToken:authenToken];
+}
 
 - (NSURL*) urlFilePath:(NSString*) filepath {
   if ([filepath containsString:@"file://"]) {
@@ -519,7 +529,8 @@ static int const RCTVideoUnset = -1;
     }
 #endif
 
-    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:url options:assetOptions];
+//    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:url options:assetOptions];
+    AVURLAsset *asset = [[SigmaDRM getInstance] assetWithUrl:uri];
     [self playerItemPrepareText:asset assetOptions:assetOptions withCallback:handler];
     return;
   } else if (isAsset) {
@@ -1682,5 +1693,8 @@ static int const RCTVideoUnset = -1;
   _restoreUserInterfaceForPIPStopCompletionHandler = completionHandler;
 }
 #endif
-
+//-(void)onProgressLoad:(NSString *)progressName status:(NSString *)error
+//{
+//    NSLog(@"Sigma DRM: %@ - %@", progressName, error);
+//}
 @end

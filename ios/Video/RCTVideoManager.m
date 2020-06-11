@@ -84,6 +84,8 @@ RCT_REMAP_METHOD(save,
 }
 RCT_EXPORT_VIEW_PROPERTY(onPictureInPictureStatusChanged, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onRestoreUserInterfaceForPictureInPictureStop, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(clientId, NSString);
+RCT_EXPORT_VIEW_PROPERTY(authenToken, NSString);
 
 - (NSDictionary *)constantsToExport
 {
