@@ -300,7 +300,7 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     }
     @ReactProp(name = PROP_AUTHEN_TOKEN)
     public void setAuthenToken(final ReactExoplayerView videoView, final String authenToken){
-        SigmaHelper.instance().setClientId(authenToken);
+        videoView.setAuthenToken(authenToken);
     }
 
     private boolean startsWithValidScheme(String uriString) {
