@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,18 +15,20 @@
 		D1107C0F2110259000073188 /* RCTVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D1107C062110259000073188 /* RCTVideoManager.m */; };
 		D1107C102110259000073188 /* RCTVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1107C082110259000073188 /* RCTVideoPlayerViewController.m */; };
 		D1107C112110259000073188 /* RCTVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D1107C082110259000073188 /* RCTVideoPlayerViewController.m */; };
+		DDD0A19C24F9FFEB00CC15B4 /* SigmaDRM.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD317ABD249379F90059E73B /* SigmaDRM.h */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		FD317AC0249379F90059E73B /* libSigmaDRM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD317ABF249379F90059E73B /* libSigmaDRM.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				DDD0A19C24F9FFEB00CC15B4 /* SigmaDRM.h in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 		641E28421F0EEC8500443AF6 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;

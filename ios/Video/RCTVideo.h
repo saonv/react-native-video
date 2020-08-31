@@ -43,6 +43,8 @@
 @property (nonatomic, copy) RCTDirectEventBlock onVideoExternalPlaybackChange;
 @property (nonatomic, copy) RCTDirectEventBlock onPictureInPictureStatusChanged;
 @property (nonatomic, copy) RCTDirectEventBlock onRestoreUserInterfaceForPictureInPictureStop;
+// TcoN.D
+@property (nonatomic, copy) RCTDirectEventBlock onShowUid;
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 

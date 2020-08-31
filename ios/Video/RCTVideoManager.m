@@ -66,6 +66,8 @@ RCT_EXPORT_VIEW_PROPERTY(onReadyForDisplay, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onPlaybackStalled, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onPlaybackResume, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onPlaybackRateChange, RCTDirectEventBlock);
+//TcoN.D
+RCT_EXPORT_VIEW_PROPERTY(onShowUid, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVideoExternalPlaybackChange, RCTDirectEventBlock);
 RCT_REMAP_METHOD(save,
         options:(NSDictionary *)options
@@ -86,6 +88,9 @@ RCT_EXPORT_VIEW_PROPERTY(onPictureInPictureStatusChanged, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onRestoreUserInterfaceForPictureInPictureStop, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(clientId, NSString);
 RCT_EXPORT_VIEW_PROPERTY(authenToken, NSString);
+//TcoN.D
+RCT_EXPORT_VIEW_PROPERTY(sigmaUid, NSString);
+RCT_EXPORT_VIEW_PROPERTY(sigmaDrmUrl, NSString);
 
 - (NSDictionary *)constantsToExport
 {

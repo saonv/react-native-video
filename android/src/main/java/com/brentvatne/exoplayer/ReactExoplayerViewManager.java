@@ -12,11 +12,15 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.source.hls.SigmaHelper;
+import com.google.android.exoplayer2.source.shls.SigmaHelper;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.annotation.Nullable;
 
@@ -62,6 +66,10 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_CONTROLS = "controls";
     private static final String PROP_CLIENTID = "clientId";
     private static final String PROP_AUTHEN_TOKEN = "authenToken";
+    //    TcoN.D
+    private static final String PROP_SIGMA_UID = "sigmaUid";
+    private static final String PROP_SIGMA_DRM_URL = "sigmaDrmUrl";
+    private static final String PROP_SIGMA_FINGER_KEY = "sigmaFingerKey";
 
     private ReactExoplayerConfig config;
 
@@ -141,6 +149,32 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
                 }
             }
         }
+    }
+
+    //     TcoN.D
+    @ReactProp(name = PROP_SIGMA_UID)
+    public void setSigmaUid(final ReactExoplayerView videoView,final String uid){
+        videoView.setSigmaUid(uid);
+    }
+
+    @ReactProp(name = PROP_SIGMA_DRM_URL)
+    public void setSigmaDrmUrl(final ReactExoplayerView videoView,final String drmUrlJson){
+        Vector<String> list = new Vector<String>();
+        try {
+            JSONArray jsonArray = new JSONArray(drmUrlJson);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                String url = jsonArray.getString(i);
+                list.add(url);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        videoView.setSigmaDrmUrl(list);
+    }
+
+    @ReactProp(name = PROP_SIGMA_FINGER_KEY)
+    public void setFingerKey(final ReactExoplayerView videoView,final String key){
+        videoView.setFingerKey(key);
     }
 
     @ReactProp(name = PROP_RESIZE_MODE)

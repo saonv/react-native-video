@@ -46,8 +46,10 @@ class VideoEventEmitter {
     private static final String EVENT_AUDIO_BECOMING_NOISY = "onVideoAudioBecomingNoisy";
     private static final String EVENT_AUDIO_FOCUS_CHANGE = "onAudioFocusChanged";
     private static final String EVENT_PLAYBACK_RATE_CHANGE = "onPlaybackRateChange";
+    //    TcoN.D
+    private static final String EVENT_SHOW_UID = "onShowUid";
 
-    static final String[] Events = {
+    static final String[] Events = new String[]{
             EVENT_LOAD_START,
             EVENT_LOAD,
             EVENT_ERROR,
@@ -68,6 +70,8 @@ class VideoEventEmitter {
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
             EVENT_BANDWIDTH,
+            //    TcoN.D
+            EVENT_SHOW_UID,
     };
 
     @Retention(RetentionPolicy.SOURCE)
@@ -92,6 +96,7 @@ class VideoEventEmitter {
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
             EVENT_BANDWIDTH,
+            EVENT_SHOW_UID
     })
     @interface VideoEvents {
     }
@@ -127,8 +132,9 @@ class VideoEventEmitter {
 
     private static final String EVENT_PROP_TIMED_METADATA = "metadata";
 
-    private static final String EVENT_PROP_BITRATE = "bitrate";   
-
+    private static final String EVENT_PROP_BITRATE = "bitrate";
+    //    TcoN.D
+    private static final String EVENT_PROP_SHOW_UID = "dataUid";
 
     void setViewId(int viewId) {
         this.viewId = viewId;
@@ -286,5 +292,12 @@ class VideoEventEmitter {
 
     private void receiveEvent(@VideoEvents String type, WritableMap event) {
         eventEmitter.receiveEvent(viewId, type, event);
+    }
+
+    //    TcoN.D
+    void showUid(String data) {
+        WritableMap event = Arguments.createMap();
+        event.putString(EVENT_PROP_SHOW_UID, data);
+        receiveEvent(EVENT_SHOW_UID, event);
     }
 }

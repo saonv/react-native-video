@@ -10,13 +10,16 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = 'https://github.com/react-native-community/react-native-video'
-  s.source       = { :git => "https://github.com/react-native-community/react-native-video.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/saonv/react-native-video.git", :tag => "#{s.version}" }
 
   s.ios.deployment_target = "8.0"
   s.tvos.deployment_target = "9.0"
 
   s.subspec "Video" do |ss|
-    ss.source_files  = "ios/Video/*.{h,m}"
+    ss.source_files  = "ios/Video/*.{h,m}","ios/SigmaDRM/include/*.h"
+    ss.vendored_libraries = 'ios/SigmaDRM/lib/libSigmaDRM.a'
+    ss.public_header_files = "ios/SigmaDRM/include/**"
+    ss.xcconfig = { 'HEADER_SEARCH_PATHS' => "${PODS_ROOT}/#{s.name}/ios/SigmaDRM/include/**" }
     s.static_framework = true
   end
 

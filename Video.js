@@ -268,6 +268,12 @@ export default class Video extends Component {
     return NativeModules.UIManager.getViewManagerConfig(viewManagerName);
   };
 
+  _showUid = event => {
+    if (this.props.onShowUid) {
+      this.props.onShowUid(event.nativeEvent);
+    }
+  };
+
   render() {
     const resizeMode = this.props.resizeMode;
     const source = resolveAssetSource(this.props.source) || {};
@@ -335,6 +341,9 @@ export default class Video extends Component {
       onAudioBecomingNoisy: this._onAudioBecomingNoisy,
       onPictureInPictureStatusChanged: this._onPictureInPictureStatusChanged,
       onRestoreUserInterfaceForPictureInPictureStop: this._onRestoreUserInterfaceForPictureInPictureStop,
+      // TcoN.D
+      onShowUid: this._showUid,
+      sigmaDrmUrl: this.props.sigmaDrmUrl||'',
     });
 
     const posterStyle = {
@@ -395,6 +404,13 @@ Video.propTypes = {
   ]),
   filterEnabled: PropTypes.bool,
   /* Native only */
+  // TcoN.D
+  clientId: PropTypes.string, // require
+  authenToken: PropTypes.string, // require
+  sigmaUid: PropTypes.string, // require
+  sigmaDrmUrl: PropTypes.string, // require
+  onShowUid: PropTypes.func,
+  // 
   src: PropTypes.object,
   seek: PropTypes.oneOfType([
     PropTypes.number,

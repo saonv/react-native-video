@@ -34,10 +34,15 @@ import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.LHlsExoPlayer;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.drm.DrmInitData;
+import com.google.android.exoplayer2.drm.DrmSession;
+import com.google.android.exoplayer2.drm.DrmSessionManager;
+import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
 import com.google.android.exoplayer2.metadata.Metadata;
@@ -51,9 +56,13 @@ import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
-import com.google.android.exoplayer2.source.hls.HlsMediaSource;
-import com.google.android.exoplayer2.source.hls.SigmaAdapter;
-import com.google.android.exoplayer2.source.hls.SigmaHelper;
+import com.google.android.exoplayer2.source.shls.SHlsExoPlayer;
+import com.google.android.exoplayer2.source.shls.SHlsMediaSource;
+import com.google.android.exoplayer2.source.shls.SigmaAdapter;
+import com.google.android.exoplayer2.source.shls.SigmaHelper;
+import com.google.android.exoplayer2.source.shls.playlist.SHlsExtraDataListener;
+import com.google.android.exoplayer2.source.shls.playlist.SHlsPlaylist;
+import com.google.android.exoplayer2.source.shls.playlist.SHlsPlaylistParserFactory;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
@@ -75,6 +84,7 @@ import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Vector;
 
 @SuppressLint("ViewConstructor")
 class ReactExoplayerView extends FrameLayout implements
@@ -147,6 +157,7 @@ class ReactExoplayerView extends FrameLayout implements
     private boolean mReportBandwidth = false;
     private boolean controls;
     private String drmToken;
+    private Handler mainHandler;
     // \ End props
 
     // React
@@ -210,6 +221,7 @@ class ReactExoplayerView extends FrameLayout implements
     private void createViews() {
         clearResumePosition();
         mediaDataSourceFactory = buildDataSourceFactory(true);
+        mainHandler = new Handler();
         if (CookieHandler.getDefault() != DEFAULT_COOKIE_MANAGER) {
             CookieHandler.setDefault(DEFAULT_COOKIE_MANAGER);
         }
@@ -425,6 +437,7 @@ class ReactExoplayerView extends FrameLayout implements
             public void run() {
                 if (player == null) {
                     TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
+
                     trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
                     trackSelector.setParameters(trackSelector.buildUponParameters()
                             .setMaxVideoBitrate(maxBitRate == 0 ? Integer.MAX_VALUE : maxBitRate));
@@ -440,6 +453,7 @@ class ReactExoplayerView extends FrameLayout implements
                             new DefaultRenderersFactory(getContext())
                                     .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF);
                     // TODO: Add drmSessionManager to 5th param from: https://github.com/react-native-community/react-native-video/pull/1445
+//                    player = new LHlsExoPlayer(getContext(), renderersFactory, trackSelector, defaultLoadControl, bandwidthMeter, null, null);
                     player = ExoPlayerFactory.newSimpleInstance(getContext(), renderersFactory,
                             trackSelector, defaultLoadControl, null, bandwidthMeter);
                     player.addListener(self);
@@ -505,12 +519,14 @@ class ReactExoplayerView extends FrameLayout implements
                         config.buildLoadErrorHandlingPolicy(minLoadRetryCount)
                 ).createMediaSource(uri);
             case C.TYPE_HLS:
-                HlsMediaSource mediaSource = new HlsMediaSource.Factory(
-                        mediaDataSourceFactory
-                ).setLoadErrorHandlingPolicy(
-                        config.buildLoadErrorHandlingPolicy(minLoadRetryCount)
-                ).createMediaSource(uri);
-                mediaSource.setContext(themedReactContext);
+                SHlsMediaSource mediaSource = new SHlsMediaSource(uri, mediaDataSourceFactory, minLoadRetryCount, new Handler(), null);
+                mediaSource.setContext(getContext().getApplicationContext());
+                SHlsExoPlayer.setSHlsExtraDataListener(new SHlsExtraDataListener() {
+                    @Override
+                    public void onData(String data) {
+                        eventEmitter.showUid(data);
+                    }
+                });
                 return mediaSource;
 //            case C.TYPE_OTHER:
 //                return new ProgressiveMediaSource.Factory(
@@ -1325,6 +1341,19 @@ class ReactExoplayerView extends FrameLayout implements
                 removeViewAt(indexOfPC);
             }
         }
+    }
+
+//  TcoN.D
+    public void setSigmaUid(String sigmaUid) {
+        SHlsExoPlayer.setSigmaUid(sigmaUid);
+    }
+
+    public void setSigmaDrmUrl(Vector<String> sigmaDrmUrl) {
+        SHlsExoPlayer.setSigmaDrmUrl(sigmaDrmUrl);
+    }
+
+    public void setFingerKey(String key) {
+//        SHlsPlaylistParser.setKey(this.sigmaDrmUrl);
     }
 
     public void setClientId(String clientId){

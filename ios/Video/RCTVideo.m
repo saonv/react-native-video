@@ -1332,6 +1332,40 @@ static int const RCTVideoUnset = -1;
     }];
   }
 }
+// TcoN.D
+-(void)setSigmaUid:(NSString *)sigmaUid
+{
+    [[SigmaDRM getInstance] setSigmaUid:sigmaUid];
+}
+
+-(void)setSigmaDrmUrl:(NSString *)drmUrl
+{
+    NSError *err;
+    NSArray *drms = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:[drmUrl UTF8String] length:[drmUrl length]] options:NSJSONReadingMutableContainers error:&err];
+    [[SigmaDRM getInstance] setDrmUrl:drms];
+}
+
+-(void)onSigmaStatus:(NSInteger)status
+{
+    if (self.onShowUid){
+        NSString *dataUid = @"";
+        switch (status) {
+                case 1:
+                dataUid = @"hideInfo";
+                break;
+                case 2:
+                dataUid = @"showInfo";
+                break;
+                case 3:
+                dataUid = @"denied";
+                [_player pause];
+                break;
+            default:
+                break;
+        }
+        self.onShowUid(@{@"dataUid": dataUid});
+    }
+}
 
 - (void)setFullscreenAutorotate:(BOOL)autorotate {
   _fullscreenAutorotate = autorotate;
@@ -1693,8 +1727,8 @@ static int const RCTVideoUnset = -1;
   _restoreUserInterfaceForPIPStopCompletionHandler = completionHandler;
 }
 #endif
-//-(void)onProgressLoad:(NSString *)progressName status:(NSString *)error
-//{
-//    NSLog(@"Sigma DRM: %@ - %@", progressName, error);
-//}
+-(void)onProgressLoad:(NSString *)progressName status:(NSString *)error
+{
+  //  NSLog(@"Sigma DRM: %@ - %@", progressName, error);
+}
 @end
